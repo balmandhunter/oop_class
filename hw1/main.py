@@ -19,7 +19,6 @@ if __name__ == '__main__':
         # create Treeview with a column for each movie atrribute
         cols = list(df2.columns)
         treeview = ttk.Treeview(mainframe, columns=cols, show='headings', height=len(df2))
-
         treeview.grid(column=0, row=1, padx=5, sticky=(E, W))
 
         for i in cols:
@@ -29,8 +28,22 @@ if __name__ == '__main__':
         for index, row in df2.iterrows():
             treeview.insert("", 0, text=index, values=list(row))
 
-        treeview.column("Rank", minwidth=0, width=50, stretch=NO)
-        treeview.column("Year", minwidth=0, width=50, stretch=NO)
+        treeview.column("Rank", width=50, stretch=NO)
+        treeview.column("Year", width=50, stretch=NO)
+        treeview.column("Rating", width=50, stretch=NO)
+        treeview.column("Votes", width=50, stretch=NO)
+        treeview.column("Title", width=100, stretch=NO)
+        treeview.column("Genre", width=100, stretch=NO)
+        treeview.column("Director", width=100, stretch=NO)
+        treeview.column("Description", width=100, stretch=NO)
+        treeview.column("Actors", width=100, stretch=NO)
+        treeview.column("Runtime (Minutes)", width=110, stretch=NO)
+        treeview.column("Revenue (Millions)", width=110, stretch=NO)
+        treeview.column("Metascore", width=100, stretch=NO)
+
+
+
+
 
 
 
