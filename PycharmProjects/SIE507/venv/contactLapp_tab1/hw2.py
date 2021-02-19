@@ -39,11 +39,11 @@ def d_get_row(selected, col_name):
     return df_new
 
 def d_update_row(firstname,
-                          lastname,
-                          email,
-                          profession,
-                          city,
-                          state):
+                 lastname,
+                 email,
+                 profession,
+                 city,
+                 state):
     # read the data file into a df
     df = pd.read_csv(FILENAME, index_col=0)
     # get the index of the person with edited details
@@ -107,20 +107,6 @@ def c_get_data_for_dropdown():
     d_read_from_pandas_all()
     return
 
-def v_create_choice_dropdown(tab):
-    values = ['city', 'profession']
-    # input variable has to be a StringVar, special var for Tkinter to grab user input
-    selected = tk.StringVar()
-    selected.set("Select Search Method")
-    # create drop down menu
-    options = tk.OptionMenu(tab, selected, *values)
-    buttonSearch = tk.Button(tab,
-                             text="Search",
-                             command=lambda: c_create_dropdown(selected.get(),
-                                                               tab3,
-                                                               1))
-
-    return options, buttonSearch
 
 def c_create_dropdown(cname, tab, grid_row):
     col_name=cname
@@ -128,12 +114,19 @@ def c_create_dropdown(cname, tab, grid_row):
 
     # input variable has to be a StringVar, special var for Tkinter to grab user input
     selected = tk.StringVar()
-    selected.set("Search by " + cname)
+    # set a display format of cname
+    if cname == 'lastname':
+        cname_disp = 'Last Name'
+    else:
+        cname_disp = cname.capitalize()
+    #set default in dropdown
+    selected.set("Search by " + cname_disp)
+
     # create drop down menu
     options = tk.OptionMenu(tab, selected, *values)
     buttonSearch = tk.Button(tab,
-                                text="Retrieve contact",
-                                command=lambda: c_load_data_results(tab,
+                             text="Search by "  + cname_disp,
+                             command=lambda: c_load_data_results(tab,
                                                                     selected.get(),
                                                                     col_name,
                                                                     grid_row))
@@ -155,20 +148,29 @@ def c_create_display_table(tab):
             e1.config(state='disabled')
 
 def c_create_beautiful_display_table(tab, df, grid_row):
-    table = ttk.Treeview(tab, columns=(1, 2, 3), height=10, show="headings")
+    table = ttk.Treeview(tab, columns=(1, 2, 3, 4, 5), height=10, show="headings")
 
     table.heading(1, text="Last Name")
     table.heading(2, text="First Name")
     table.heading(3, text="Email")
+    table.heading(4, text="Profession")
+    table.heading(5, text="City")
 
     table.column(1, width=110)
     table.column(2, width=110)
     table.column(3, width=250)
+    table.column(4, width=150)
+    table.column(5, width=110)
+
 
     table.grid(row=grid_row, column=0, columnspan=3, padx=15, pady=15)
     row, column = df.shape
     for r in range(row):
-        table.insert('', 'end', values=(df.iloc[r, 0], df.iloc[r, 1], df.iloc[r, 2]))
+        table.insert('', 'end', values=(df.iloc[r, 0],
+                                        df.iloc[r, 1],
+                                        df.iloc[r, 2],
+                                        df.iloc[r, 5],
+                                        df.iloc[r, 6]))
 
     return 1
 
@@ -293,7 +295,7 @@ def v_initialize_GUI():
     global emailTabTwo
     form = tk.Tk()
     form.title("Contact List Form")
-    form.geometry("600x500")
+    form.geometry("825x500")
     tab_parent = ttk.Notebook(form)
 
     tab1 = ttk.Frame(tab_parent)
@@ -436,11 +438,17 @@ def v_make_tab3():
 
     # call data layer function
     c_get_data_for_dropdown()
+    # create the profession dropdown
+    options_t3_p, buttonSearch_t3_p = c_create_dropdown('profession', tab3, 2)
+    # display the profession dropdown
+    options_t3_p.grid(row=0, column=0, padx=15, pady=15, sticky='W')
+    buttonSearch_t3_p.grid(row=0, column=1, padx=15, pady=15, sticky='W')
 
-    options, buttonSearch = v_create_choice_dropdown(tab3)
-    options.grid(row=0, column=0, padx=15, pady=15)
-    buttonSearch.grid(row=0, column=1, padx=15, pady=15)
-
+    #create the city dropdown
+    options_t3_c, buttonSearch_t3_c = c_create_dropdown('city', tab3, 2)
+    # display the city dropdown
+    options_t3_c.grid(row=1, column=0, padx=15, pady=15, sticky='W')
+    buttonSearch_t3_c.grid(row=1, column=1, padx=15, pady=15, sticky='W')
 
     return 1
 
