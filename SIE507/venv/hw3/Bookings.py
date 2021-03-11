@@ -22,9 +22,11 @@ class Booking:
         self.seat.print()
 
 class BookingMgr:
-    def __init__(self, booking_file_name, plane):
+    def __init__(self, Plane, booking_file_name=None):
         self.plane = Plane
-        self.booking_file_name = booking_file_name
+        if booking_file_name:
+            self.booking_file_name = booking_file_name
+            df_booking = self.__makeBookingdfFromFile()
 
     def bookSeat(self, seat, booking):
         self.booking = booking
@@ -61,3 +63,9 @@ class BookingMgr:
 
     def __update_booking_file(self):
         pass
+
+    def __update
+
+    def __makeBookingdfFromFile(self):
+        df = pd.read_csv(self.booking_file_name, index_col=None)
+        print(df.head())
