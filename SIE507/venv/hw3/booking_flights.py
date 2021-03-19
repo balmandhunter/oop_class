@@ -1,10 +1,7 @@
-from Airplane import Airplane, Seat
-from ReadWriteFile import ReadWriteFile
-# from Bookings import BookingMgr, Booking
+from Airplane import Airplane
+from Bookings import BookingMgr
 
-# seatlist = ReadWriteFile()
-myprivateplane = Airplane(rows=1, seats=1)
-# myBookingMgr = BookingMgr("booking.csv", myprivateplane)
-# myBookingMgr.UserMenu()
-# seat_array = seatlist.fileRead('seats.txt')
-# print((seat_array.shape))
+# Initialize a plane, using rows and seats or a seats.txt file
+myprivateplane = Airplane(filename='seats.txt')
+myBookingMgr = BookingMgr(myprivateplane, booking_file_name='flight_bookings.csv')
+myBookingMgr.UserMenu()
