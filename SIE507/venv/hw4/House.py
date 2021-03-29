@@ -9,22 +9,37 @@ class House(Property):
 
     '''This instance method prints information about the house'''
     def display(self):
-        # print property information from the parent class
-        Property.display(self)
-        # print house information
-        print('Number of Stories: ' + str(self.num_stories) + '\n' +
-              'Garage: ' + str(self.garage) + '\n'
-              'Fenced Yard: ' + str(self.fenced_yard))
+        print('---------------')
+        # print property address from the property class
+        print('Address: ' + Property.get_address(self))
+        print('Property Type: House')
 
-    '''This static method prompts the user for information about the house and returns it, so that 
+    '''This class method prompts the user for information about the house and returns it, so that
     it can be passed as arguments to a new house object'''
-    @staticmethod
-    def prompt_init():
-        # call the static method of the property class to prompt the user for arguments of the property class
-        args = Property.prompt_init()
-        # prompt the user to enter the arguments for a house
-        args.update({'num_stories': input("How many stories does the house have?:"),
-                     'garage': input("Does the house have a garage (True or False)?:"),
-                     'fenced_yard': input("Does the house have a fenced-in yard (True or False)?:")})
+    @classmethod
+    def prompt_init(cls):
+        # call the prompt_init() method of the property class to prompt the user for arguments of the property class
+        house_info = Property.prompt_init()
+
+        # prompt the user for inputs specific to houses and verify them
+        num_stories = input('How many stories does the house have?:')
+        while num_stories.isdigit() is False:
+            print('Invalid Input. Please enter an integer.')
+            num_stories = input('How many stories does the house have?:')
+
+        garage = input('Does the house have a garage (yes or no)?:')
+        while garage.lower() not in ['yes', 'no']:
+            print('Invalid Input.')
+            garage = input('Does the house have a garage (yes or no)?:')
+
+        fenced_yard = input('Does the house have a fenced-in yard (yes or no)?:')
+        while fenced_yard.lower() not in ['yes', 'no']:
+            print('Invalid Input.')
+            fenced_yard = input('Does the house have a fenced-in yard (yes or no)?:')
+
+        house_info.update({'num_stories': num_stories,
+                     'garage': num_stories,
+                     'fenced_yard': fenced_yard})
+
         # return the property and house arguments
-        return args
+        return house_info
