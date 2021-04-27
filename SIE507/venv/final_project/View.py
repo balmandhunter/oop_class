@@ -7,28 +7,29 @@ from tkinter import *
 import pandas as pd
 
 class View:
-    def __init__(self):
-        self.mainframe = None
-        # initialize the view
-        self.__initialize_GUI()
+    def __init__(self, root, controller, **kwargs):
+        super().__init__(**kwargs)
+        self.root = root
+        self.controller = controller
 
-    def c_start_app(self):
-        form = None
-        v_initialize_GUI()
-        form.mainloop()
-
-    def __initialize_GUI(self):
+    def initialize_GUI(self):
         # setup and name the window
-        self.root = tk.Tk()
         self.root.title("Maine Garden Planner")
         self.root.geometry("825x500")
         # Create a frame widget
         self.mainframe = ttk.Frame(self.root)
         self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
-        # call the function that makes the initial view with dropdown
-        self.make_initial_view()
 
+
+class ZoneView(View):
+    def __init__(self, root, controller, **kwargs):
+        super().__init__(root, controller, **kwargs)
+        self.root = root
+        # initialize the view
+        self.buttons = {}
+        self.controller = controller
+        super().initialize_GUI()
 
     def make_initial_view(self):
         # input variable has to be a StringVar, special var for Tkinter to grab user input
@@ -39,25 +40,11 @@ class View:
 
         # create drop down menu
         # create the zone dropdown
-        options_list = ['3','4','5','6']
-        options1 = self.c_create_dropdown("Select Your Gardening Zone", options_list)
+        zone_options = ['3','4','5','6']
+        zone_dropdown = self.c_create_dropdown("Select Your Gardening Zone", zone_options, 1, 0)
+
         # display the profession dropdown
-        options1.grid(row=0, column=0, padx=15, pady=15)
-
-        # Make a Dropdown for the plan type
-        options_list = ['Load Last Year\'s Plan', 'Start a New Plan']
-        options2 = self.c_create_dropdown("Choose a Plan", options_list)
-        # display the  dropdown
-        options2.grid(row=2, column=0, padx=15, pady=15)
-
-        # frame for table and button "Submit"
-        frame_data = tk.Frame(self.mainframe)
-        frame_data.grid(row=3, column=0, padx=5, pady=15)
-
-        # button "Submit" - inside "frame_data"
-        ##### add command to this button to make it do something!
-        next_button = ttk.Button(frame_data, text="Submit", command=None)
-        next_button.grid(row=3, column=0, padx=5)
+        zone_dropdown.grid(row=0, column=0, padx=15, pady=15)
 
         # make an exit button to end the program
         exit_button = ttk.Button(self.mainframe, text="EXIT", command=self.root.destroy)
@@ -65,7 +52,8 @@ class View:
 
         self.root.mainloop()
 
-    def c_create_dropdown(self, title, values):
+
+    def c_create_dropdown(self, title, values, buttonrow, buttoncol):
         # input variable has to be a StringVar, special var for Tkinter to grab user input
         selected = tk.StringVar()
         # set default in dropdown
@@ -73,11 +61,15 @@ class View:
 
         # create drop down menu
         options = tk.OptionMenu(self.mainframe, selected, *values)
+        # make the button
+        self.create_button(self.mainframe, 'Submit', buttonrow, buttoncol)
 
         return options
 
-    def submit_initial_entry():
-        pass
+    def create_button(self, frame, name, row, column):
+        self.buttons[name] = tk.Button(frame)
+        self.buttons[name]["text"] = name
+        self.buttons[name].grid(row=row, column=column)
 
     def on_select(val):
         pass
