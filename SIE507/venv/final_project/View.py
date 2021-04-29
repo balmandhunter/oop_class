@@ -20,6 +20,20 @@ class View:
         self.mainframe = ttk.Frame(self.root)
         self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 
+    '''Destroy all of the widgets before making a new window'''
+    def _clear_canvas(self):
+        for widget in self.root.winfo_children():
+            pass
+            # widget.destroy()
+
+    '''Create a button and add it to the button dictionary'''
+    def create_button(self, frame, name, row, column):
+        # Style the buttons
+        ttk.Style().configure("TButton", padding=6, relief="flat", background="#ccc")
+        self.buttons[name] = ttk.Button(frame)
+        self.buttons[name]["text"] = name
+        self.buttons[name].grid(row=row, column=column)
+
 class ZonePlanSelectionView(View):
     def __init__(self, root, controller, dropdown_topic,  **kwargs):
         super().__init__(root, controller, **kwargs)
@@ -60,10 +74,13 @@ class ZonePlanSelectionView(View):
         # make the button
         self.create_button(self.mainframe, 'Submit', buttonrow, buttoncol)
 
-    '''Destroy all of the widgets before making a new window'''
-    def _clear_canvas(self):
-        for widget in self.mainframe.winfo_children():
-            widget.destroy()
+class SizeView(View):
+    def __init__(self, root, controller,  **kwargs):
+        super().__init__(root, controller, **kwargs)
+        self.root = root
+        self.buttons = {}
+        self.controller = controller
+        super().initialize_GUI()
 
     '''Create the view where users input the size of their garden bed'''
     def make_size_view(self):
@@ -82,14 +99,39 @@ class ZonePlanSelectionView(View):
         # Create the submit button
         self.create_button(self.mainframe, 'Submit', 3, 3)
 
-    '''Create a button and add it to the button dictionary'''
-    def create_button(self, frame, name, row, column):
-        # Style the buttons
-        ttk.Style().configure("TButton", padding=6, relief="flat", background="#ccc")
-        self.buttons[name] = ttk.Button(frame)
-        self.buttons[name]["text"] = name
-        self.buttons[name].grid(row=row, column=column)
 
+class BedPlanView(View):
+    def __init__(self, root, controller,  **kwargs):
+        super().__init__(root, controller, **kwargs)
+        self.root = root
+        self.buttons = {}
+        self.controller = controller
+        super().initialize_GUI()
 
+    '''Return the garden plan'''
+    def show_bed(self, square_obj_list, length, width):
+        columns = width
+        print('show_bed columns/width: ')
+        print(columns)
+        table = ttk.Treeview(self.mainframe, columns=list(range(1,columns+2)), height=10, show="headings")
+
+        table.heading(1, text='')
+        table.column(1, width=100)
+        for column in range(2,columns+2):
+            table.heading(column, text=str(column-1))
+            table.column(column, width=100)
+
+        print('show_bed rows/length: ')
+        print(length)
+
+        table.grid(row=3, column=0, columnspan=3, padx=15, pady=15)
+
+        count = 0
+        for row in square_obj_list:
+            count +=1
+            value_list = [count]
+            for square in row:
+                value_list.append(square.return_plant())
+            table.insert('', 'end', values=value_list)
 
 
