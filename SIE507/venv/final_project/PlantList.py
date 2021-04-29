@@ -8,3 +8,7 @@ class PlantList:
 
     def import_plant_data(self):
         self.df_plant = pd.read_csv(self.filename, index_col=None)
+
+    def return_plants(self):
+        plants = self.df_plant.name.unique()
+        return plants
