@@ -1,4 +1,4 @@
-from View import View, ZonePlanSelectionView
+from View import View, ZonePlanSelectionView, SizeView, BedPlanView
 from PlantList import PlantList
 from RaisedBed import RaisedBed
 from abc import ABC, abstractmethod
@@ -49,18 +49,29 @@ class Controller:
         self.raisedbed.plan_type = plan_type
         if plan_type == 'Start a New Plan':
             print('Starting a New Plan')
-            self.view.make_size_view()
+            self.size_view = SizeView(self.root, self)
+            self.size_view.make_size_view()
             # Bind the button to the appropriate function
-            self.view.buttons['Submit'].configure(command=self.get_bed_size)
+            self.size_view.buttons['Submit'].configure(command=self.get_bed_size)
             # self.root.mainloop()
         else:
             print('not coded yet')
 
+    '''Ask the user for the size of their garden bed, create the raised bed square objects, 
+    and return the empty bed diagram to the user.'''
     def get_bed_size(self):
-        if self.view.length.get() == "" or self.view.length.get() == "":
+        # get the length and width from the view
+        if self.size_view.length.get() == "" or self.size_view.length.get() == "":
             messagebox.showinfo("Application Error", "Empty Textbox!")
-        ### add error message for non integer
+        ######## add error message for non integer ############
         else:
-            length = self.view.length.get()
-            width = self.view.width.get()
+            length = self.size_view.length.get()
+            width = self.size_view.width.get()
         self.raisedbed.initialize_squares(length, width)
+        self.get_plan()
+
+    '''Return the current garden plan to the user'''
+    def get_plan(self):
+        self.bedplanview = BedPlanView(self.root, self)
+        # show the bed layout to the user
+        self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
