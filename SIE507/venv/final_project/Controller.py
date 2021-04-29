@@ -30,7 +30,6 @@ class Controller:
         self.view.buttons['Submit'].configure(command=button_command)
         self.root.mainloop()
 
-
     '''Get the selected zone from the dropdown, send it to the plant list and raised bed, and update the view.'''
     def set_zone_and_update_view(self):
         # Get the user-selected zone from the dropdown
@@ -72,6 +71,6 @@ class Controller:
 
     '''Return the current garden plan to the user'''
     def get_plan(self):
-        self.bedplanview = BedPlanView(self.root, self)
+        self.bedplanview = BedPlanView(self.root, self, self.plantlist.return_plants())
         # show the bed layout to the user
         self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
