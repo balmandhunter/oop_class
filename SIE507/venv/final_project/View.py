@@ -106,6 +106,8 @@ class BedPlanView(View):
         self.controller = controller
         self.plant_list = plant_list
         super().initialize_GUI()
+        self.root.geometry("500x500")
+
 
     '''Return the garden plan'''
     def show_bed(self, square_obj_list, length, width):
