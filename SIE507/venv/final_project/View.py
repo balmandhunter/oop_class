@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-# from tkinter import messagebox
 from tkinter import *
-
-# from tkinter import filedialog
 import pandas as pd
+
 
 class View:
     def __init__(self, root, controller, **kwargs):
@@ -101,31 +99,31 @@ class SizeView(View):
 
 
 class BedPlanView(View):
-    def __init__(self, root, controller,  **kwargs):
+    def __init__(self, root, controller, plant_list, **kwargs):
         super().__init__(root, controller, **kwargs)
         self.root = root
         self.buttons = {}
         self.controller = controller
+        self.plant_list = plant_list
         super().initialize_GUI()
 
     '''Return the garden plan'''
     def show_bed(self, square_obj_list, length, width):
         columns = width
-        print('show_bed columns/width: ')
-        print(columns)
         table = ttk.Treeview(self.mainframe, columns=list(range(1,columns+2)), height=10, show="headings")
 
+        # set the column headings and width
         table.heading(1, text='')
         table.column(1, width=100)
         for column in range(2,columns+2):
             table.heading(column, text=str(column-1))
             table.column(column, width=100)
 
-        print('show_bed rows/length: ')
-        print(length)
-
+        # put the table on the canvas
         table.grid(row=3, column=0, columnspan=3, padx=15, pady=15)
 
+        # iterate through the square object list and get the plant names, then add them
+        # to the table (the count becomes an index column)
         count = 0
         for row in square_obj_list:
             count +=1
@@ -133,5 +131,21 @@ class BedPlanView(View):
             for square in row:
                 value_list.append(square.return_plant())
             table.insert('', 'end', values=value_list)
+
+        self._reset_entry()
+
+    def _reset_entry(self):
+        self.search_name = tk.StringVar()
+
+        # input variable has to be a StringVar, special var for Tkinter to grab user input
+        self.selected = tk.StringVar()
+        # set default in dropdown
+        self.selected.set("Select a Plant")
+        # create dropdown menu
+        self.zone_dropdown = tk.OptionMenu(self.mainframe, self.selected, *self.plant_list)
+        # display the profession dropdown
+        self.zone_dropdown.grid(row=0, column=0, padx=15, pady=15)
+        # make the button
+        self.create_button(self.mainframe, 'Add Plant', 0, 1)
 
 
