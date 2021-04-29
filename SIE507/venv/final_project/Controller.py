@@ -1,6 +1,7 @@
 from View import View, ZonePlanSelectionView, SizeView, BedPlanView
 from PlantList import PlantList
 from RaisedBed import RaisedBed
+from Exceptions import GardenExceptions
 from abc import ABC, abstractmethod
 from tkinter import messagebox
 
@@ -11,6 +12,8 @@ class Controller:
     def __init__(self, plant_list_filename, **kwargs):
         super().__init__(**kwargs)
         self.root = tk.Tk()
+        self.gardenexceptions = GardenExceptions()
+        self.gardenexceptions.call_back(self)
         # self.make_selection_view('view')    uncomment when finished debugging
         # self.plant_list_filename = plant_list_filename
         ##### debugging code ######
@@ -96,25 +99,6 @@ class Controller:
         plant_col = self.bedplanview.column.get()
         plant_name = self.bedplanview.selected.get()
         #check that the entries are appropriate
-        self.check_plant_location_entry(plant_row, plant_col, plant_name)
+        self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name)
 
         print(plant_row, plant_col, plant_name)
-
-    def check_plant_location_entry(self, plant_row, plant_col, plant_name):
-
-        # make sure the length and width entries are integers
-        while plant_row.isdigit() is False or plant_col.isdigit() is False:
-            # messagebox.showinfo("Application Error", "Please enter an integer!")
-            retry = messagebox.askretrycancel(title=None, message="Please enter an integer!")
-            self.get_plan()
-        # make sure the entry is within the size range of the raised bed
-        while int(plant_row) not in range(1, int(self.length) + 1):
-            retry = messagebox.askretrycancel(title=None, message="Row out of range!")
-            self.get_plan()
-        while int(plant_col) not in range(1, int(self.width) + 1):
-            retry = messagebox.askretrycancel(title=None, message="Column out of range!")
-            self.get_plan()
-        # Make sure the user selected a plant
-        while plant_name == "Select a Plant":
-            retry = messagebox.askretrycancel(title=None, message="No plant selected!")
-            self.get_plan()
