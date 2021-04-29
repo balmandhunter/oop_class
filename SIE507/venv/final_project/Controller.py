@@ -74,3 +74,18 @@ class Controller:
         self.bedplanview = BedPlanView(self.root, self, self.plantlist.return_plants())
         # show the bed layout to the user
         self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
+        self.bedplanview.buttons['Add Plant'].configure(command=self.get_plant_location)
+
+    '''Get the user input for location and plant to add.'''
+    def get_plant_location(self):
+        # get the length and width from the view
+        if self.bedplanview.row.get() == "" or self.bedplanview.column.get() == "":
+            messagebox.showinfo("Application Error", "Empty Textbox!")
+        elif self.bedplanview.selected.get() == "Select a Plant":
+            messagebox.showinfo("Application Error", "No plant selected!")
+        ######## add error message for non integer ############
+        else:
+            row = self.bedplanview.row.get()
+            column = self.bedplanview.column.get()
+            plant_name = self.bedplanview.selected.get()
+            print(row, column, plant_name)
