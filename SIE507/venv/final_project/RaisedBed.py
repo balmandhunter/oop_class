@@ -17,10 +17,9 @@ class RaisedBed:
     def initialize_squares(self, length, width):
         self.length = int(length)
         self.width = int(width)
-        print(self.length)
 
-        # create an empty list for seat objects
-        self.square_obj_list = [[0] * self.width for i in range(self.width)]
+        # create an empty list for square objects
+        self.square_obj_list = [[0] * self.width for i in range(self.length)]
 
         # loop through the rows and seats, and create a seat object for every seat, and save it in an array
         for row in range(0, self.length):
