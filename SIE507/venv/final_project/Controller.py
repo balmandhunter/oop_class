@@ -80,6 +80,7 @@ class Controller:
         #     self.length = self.size_view.length.get()
         #     self.width = self.size_view.width.get()
         self.raisedbed.initialize_squares(self.length, self.width)
+        self.raisedbed.create_plan_from_square_list()
         self.get_plan()
 
     '''Return the current garden plan to the user'''
@@ -106,4 +107,6 @@ class Controller:
         # call the function in the RaisedBed to fill the square
         self.raisedbed.fill_square(plant_row, plant_col, plant_name)
         # add the plant to the raised bed
+        self.raisedbed.create_plan_from_square_list()
         self.get_plan()
+
