@@ -26,3 +26,12 @@ class RaisedBed:
             for col in range(0, self.width):
                 self.square_obj_list[row][col] = Square(row, col)
         print(self.square_obj_list)
+
+    '''Function to book a seat'''
+    def fill_square(self, plant_row, plant_col, plant_name):
+        # get square object
+        square = self.square_obj_list[int(plant_row)-1][int(plant_col) - 1]
+        square.occupy_square(plant_name)
+        # self.__updateSeatChart(Seat)
+        print(square.length, square.width, square.occupied, square.plant)
+        print(self.square_obj_list)
