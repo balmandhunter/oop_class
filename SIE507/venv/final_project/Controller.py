@@ -72,7 +72,6 @@ class Controller:
     def get_bed_size(self):
         self.length = 5
         self.width = 2
-        #     self.width =
         # # get the length and width from the view
         # if self.size_view.length.get() == "" or self.size_view.length.get() == "":
         #     messagebox.showinfo("Application Error", "Empty Textbox!")
@@ -100,5 +99,11 @@ class Controller:
         plant_name = self.bedplanview.selected.get()
         #check that the entries are appropriate
         self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name)
+        self.add_plant_to_garden(plant_row, plant_col, plant_name)
 
-        print(plant_row, plant_col, plant_name)
+    '''Add user-input plant to the garden'''
+    def add_plant_to_garden(self, plant_row, plant_col, plant_name):
+        # call the function in the RaisedBed to fill the square
+        self.raisedbed.fill_square(plant_row, plant_col, plant_name)
+        # add the plant to the raised bed
+        self.get_plan()
