@@ -45,7 +45,7 @@ class ZonePlanSelectionView(View):
     def make_initial_view(self):
         if self.dropdown_topic == 'view':
             # create the zone dropdown
-            options = ['3','4','5','6']
+            options = ['3','4','5']
             title = 'Select Your Gardening Zone'
         elif self.dropdown_topic == 'plan_type':
             ###### add this function to clear the canvas -- it's breaking now
