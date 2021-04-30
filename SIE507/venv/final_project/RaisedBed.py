@@ -1,5 +1,7 @@
 import numpy as np
 from Square import Square
+from Plant import Plant, Annual, Perennial
+from PlantList import PlantList
 
 class RaisedBed:
     def __init__(self, zone):
@@ -17,7 +19,6 @@ class RaisedBed:
     def initialize_squares(self, length, width):
         self.length = int(length)
         self.width = int(width)
-
         # create an empty list for square objects
         self.square_obj_list = [[0] * self.width for i in range(self.length)]
 
@@ -26,17 +27,20 @@ class RaisedBed:
             for col in range(0, self.width):
                 self.square_obj_list[row][col] = Square(row, col)
 
-
-    '''Function to book a seat'''
-    def fill_square(self, plant_row, plant_col, plant_name):
+    '''Function to book a square'''
+    def fill_square(self, plant_row, plant_col, plant_name, plant_list):
         # get square object
         square = self.square_obj_list[int(plant_row)-1][int(plant_col) - 1]
-        square.occupy_square(plant_name)
+        # self.plant_list = PlantList()
+        # create a plant object for the correct plant and zone
+        if plant_list.get_perennial_status(plant_name) == 1:
+            self.plant = Perennial(True, plant_name, self.zone)
+        # occupy the square
+        square.occupy_square(plant_name, self.plant)
 
     '''Create an array that can be saves to a csv from the square object list'''
     def create_plan_from_square_list(self):
         plant_location_list = [['row', 'column', 'occupied', 'plant']]
-        print(self.square_obj_list)
         # iterate through the square object list and append the name of the plant in each location to a list
         for row_idx in range(0, self.length):
             for col_idx in range(0, self.width):
