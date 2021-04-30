@@ -3,7 +3,7 @@ class Square:
         self.length = length
         self.width = width
         self.occupied = False
-        self.plant = None
+        self.plant = '(empty)'
 
     def occupy_square(self, plant):
         self.occupied = True
