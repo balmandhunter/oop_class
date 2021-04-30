@@ -2,7 +2,6 @@ from View import View, ZonePlanSelectionView, SizeView, BedPlanView
 from PlantList import PlantList
 from RaisedBed import RaisedBed
 from Exceptions import GardenExceptions
-from abc import ABC, abstractmethod
 from tkinter import messagebox
 
 import tkinter as tk
@@ -10,7 +9,6 @@ import tkinter as tk
 class Controller:
 
     def __init__(self, plant_list_filename, **kwargs):
-        super().__init__(**kwargs)
         self.root = tk.Tk()
         self.gardenexceptions = GardenExceptions()
         self.gardenexceptions.call_back(self)
@@ -55,7 +53,6 @@ class Controller:
     def get_and_send_plan_selection(self):
         # Get the user-selected plan type
         plan_type = self.view.selected.get()
-
         self.raisedbed.plan_type = plan_type
         if plan_type == 'Start a New Plan':
             print('Starting a New Plan')
@@ -105,7 +102,7 @@ class Controller:
     '''Add user-input plant to the garden'''
     def add_plant_to_garden(self, plant_row, plant_col, plant_name):
         # call the function in the RaisedBed to fill the square
-        self.raisedbed.fill_square(plant_row, plant_col, plant_name)
+        self.raisedbed.fill_square(plant_row, plant_col, plant_name, self.plantlist)
         # add the plant to the raised bed
         self.raisedbed.create_plan_from_square_list()
         self.get_plan()
