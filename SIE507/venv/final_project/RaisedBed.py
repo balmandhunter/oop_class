@@ -34,9 +34,14 @@ class RaisedBed:
         # self.plant_list = PlantList()
         # create a plant object for the correct plant and zone
         if plant_list.get_perennial_status(plant_name) == 1:
-            self.plant = Perennial(True, plant_name, self.zone)
+            plant = Perennial(True, plant_name, self.zone)
+        elif plant_list.get_perennial_status(plant_name) == 0:
+            plant = Annual(plant_name, self.zone)
+        else:
+            print('Need to write exception')
+            #######add exception ############
         # occupy the square
-        square.occupy_square(plant_name, self.plant)
+        square.occupy_square(plant_name, plant)
 
     '''Create an array that can be saves to a csv from the square object list'''
     def create_plan_from_square_list(self):
