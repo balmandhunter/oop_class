@@ -48,17 +48,26 @@ class Perennial(Plant):
         super().__init__(plant_name, zone, **kwargs)
         self.is_new = is_new
         self.get_months_in_ground()
-        self.plant_name = plant_name
-        self.zone = zone
 
     def get_months_in_ground(self):
         if self.is_new == True:
             if self.should_direct_seed == True:
                 self.months_in_ground = list(range(self.direct_seed_month,13))
             elif self.should_direct_seed == False:
-                print(type(self.transplant_month))
                 self.months_in_ground = list(range(self.transplant_month,13))
         elif self.is_new == False:
             self.months_in_ground = list(range(1,13))
-        print(self.months_in_ground)
+        print(self.plant_name, self.months_in_ground)
 
+
+class Annual(Plant):
+    def __init__(self, plant_name, zone, **kwargs):
+        super().__init__(plant_name, zone, **kwargs)
+        self.get_months_in_ground()
+
+    def get_months_in_ground(self):
+        if self.should_direct_seed == True:
+            self.months_in_ground = list(range(self.direct_seed_month, 13))
+        elif self.should_direct_seed == False:
+            self.months_in_ground = list(range(self.transplant_month, 13))
+        print(self.plant_name, self.months_in_ground)
