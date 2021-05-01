@@ -86,7 +86,6 @@ class Controller:
         # show the bed layout to the user
         self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
         self.bedplanview.buttons['Add Plant'].configure(command=self.get_plant_location)
-
         self.root.mainloop()
 
 
