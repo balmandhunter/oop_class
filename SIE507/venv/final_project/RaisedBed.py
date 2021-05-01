@@ -1,4 +1,5 @@
 import numpy as np
+import csv
 from Square import Square
 from Plant import Plant, Annual, Perennial
 from PlantList import PlantList
@@ -45,8 +46,25 @@ class RaisedBed:
 
     '''Create an array that can be saves to a csv from the square object list'''
     def create_plan_from_square_list(self):
-        plant_location_list = [['row', 'column', 'occupied', 'plant']]
+        self.plant_location_list = [['row', 'column', 'occupied', 'plant']]
         # iterate through the square object list and append the name of the plant in each location to a list
         for row_idx in range(0, self.length):
             for col_idx in range(0, self.width):
-                plant_location_list.append([row_idx, col_idx, self.square_obj_list[row_idx][col_idx].occupied, self.square_obj_list[row_idx][col_idx].plant])
+                self.plant_location_list.append([row_idx,
+                                                 col_idx,
+                                                 self.square_obj_list[row_idx][col_idx].occupied,
+                                                 self.square_obj_list[row_idx][col_idx].plant])
+        self.save_plan_to_csv()
+
+    def save_plan_to_csv(self):
+        # file = open('data/raised_bed.csv', 'w')       # Open/create a text file in write only mode
+        # for line in self.plant_location_list:         # Iterate through each row in array
+        #     for char in line:                         # Iterate through each character in the loop variable line
+        #         file.write(str(char))                 # Write the character to the text file
+        #         file.write(',')
+        #     file.write('\n')                          # Go to the next line in the text file after writing a line
+        # file.close()
+
+        with open('data/raised_bed.csv', 'w', newline='') as file:
+            mywriter = csv.writer(file, delimiter=',')
+            mywriter.writerows(self.plant_location_list)
