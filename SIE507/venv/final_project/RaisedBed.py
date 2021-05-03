@@ -62,18 +62,18 @@ class RaisedBed:
 
     ''''''
     def save_plan_to_csv(self):
-        with open('data/raised_bed.csv', 'w', newline='') as file:
+        with open('data/current_plan.csv', 'w', newline='') as file:
             mywriter = csv.writer(file, delimiter=',')
             mywriter.writerows(self.plant_location_list)
 
-    '''Load a saved plan for this year'''
+    '''Load a saved plan'''
     def load_saved_plan_current_year(self, plant_list):
-        df = pd.read_csv('data/raised_bed.csv', index_col=None)
-        self.make_square_obj_list_from_plan(df, plant_list)
+        df = pd.read_csv('data/current_plan.csv', index_col=None)
+        self.make_square_obj_list_from_plan(df, plant_list, 'current')
         return self.length, self.width
 
     '''Create a list of square objects from a saved, current year plan'''
-    def make_square_obj_list_from_plan(self, df, plant_list):
+    def make_square_obj_list_from_plan(self, df, plant_list, plan_year):
         # find the number of rows and columns in the bed
         self.length = df.row.max() + 1
         self.width = df.column.max() + 1
@@ -81,8 +81,17 @@ class RaisedBed:
         self.initialize_squares(self.length, self.width)
         # create a plant object and add it to the appropriate square
         for idx, plant in df.iterrows():
+            # only add plants for squares that are occupied in the loaded plan
             if plant.plant != '(empty)':
-                self.fill_square(plant.row,
-                                 plant.column,
-                                 plant.plant,
-                                 plant_list)
+                # only add perennials to the plan is loading last year's plan
+                if plan_year == 'current' or plant_list.get_perennial_status(plant.plant) == 1:
+                    self.fill_square(plant.row,
+                                     plant.column,
+                                     plant.plant,
+                                     plant_list)
+
+    '''Load a saved plan for this year'''
+    def load_last_year_plan(self, plant_list):
+        df = pd.read_csv('data/last_year_plan.csv', index_col=None)
+        self.make_square_obj_list_from_plan(df, plant_list, 'last_year')
+        return self.length, self.width
