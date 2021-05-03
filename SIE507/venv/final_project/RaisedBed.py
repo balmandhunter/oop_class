@@ -2,7 +2,6 @@ import pandas as pd
 import csv
 from Square import Square
 from Plant import Plant, Annual, Perennial
-from PlantList import PlantList
 
 class RaisedBed:
     def __init__(self, zone):
@@ -59,17 +58,31 @@ class RaisedBed:
                                                  self.square_obj_list[row_idx][col_idx].occupied,
                                                  plant_name,
                                                  count])
-                # print(self.square_obj_list[row_idx][col_idx].occupied)
         self.save_plan_to_csv()
 
+    ''''''
     def save_plan_to_csv(self):
         with open('data/raised_bed.csv', 'w', newline='') as file:
             mywriter = csv.writer(file, delimiter=',')
             mywriter.writerows(self.plant_location_list)
 
-    def load_saved_plan_current_year(self):
+    '''Load a saved plan for this year'''
+    def load_saved_plan_current_year(self, plant_list):
         df = pd.read_csv('data/raised_bed.csv', index_col=None)
-        self.make_square_obj_list_from_plan(df)
+        self.make_square_obj_list_from_plan(df, plant_list)
+        return self.length, self.width
 
-    def make_square_obj_list_from_plan(self, df):
-        print('tada')
+    '''Create a list of square objects from a saved, current year plan'''
+    def make_square_obj_list_from_plan(self, df, plant_list):
+        # find the number of rows and columns in the bed
+        self.length = df.row.max() + 1
+        self.width = df.column.max() + 1
+        # create an empty list of square objects
+        self.initialize_squares(self.length, self.width)
+        # create a plant object and add it to the appropriate square
+        for idx, plant in df.iterrows():
+            if plant.plant != '(empty)':
+                self.fill_square(plant.row,
+                                 plant.column,
+                                 plant.plant,
+                                 plant_list)
