@@ -12,14 +12,16 @@ class Controller:
         self.root = tk.Tk()
         self.gardenexceptions = GardenExceptions()
         self.gardenexceptions.call_back(self)
-        # self.make_selection_view('view')    uncomment when finished debugging
+        # self.make_selection_view('view')    # comment to debug
         # self.plant_list_filename = plant_list_filename
         self.plant_list = PlantList('data/all_plants.csv')
 
         ##### debugging code ######
         self.zone = 3
+        self.view = ZonePlanSelectionView(self.root, self, 'view')
+
         self.set_zone_and_update_view()
-        self.raisedbed.plan_type = 'Start a New Plan'
+        # self.raisedbed.plan_type = 'Load Saved Plan (current year)' uncomment to debug
 
         self.get_bed_size()
 
@@ -43,11 +45,11 @@ class Controller:
     '''Get the selected zone from the dropdown, send it to the plant list and raised bed, and update the view.'''
     def set_zone_and_update_view(self):
         # Get the user-selected zone from the dropdown
-  #      self.zone = self.view.selected.get()   uncomment when finished debugging
+        # self.zone = self.view.selected.get()   #comment to debug
         # Initialize a raised bed with the zone
         self.raisedbed = RaisedBed(self.zone)
         # Update the view to the plan selection
-        # self.make_selection_view('plan_type') uncomment when done debugging
+        self.make_selection_view('plan_type')  #comment to debug
 
     '''Get button selection and send it to Raised Bed'''
     def get_and_send_plan_selection(self):
@@ -60,24 +62,23 @@ class Controller:
             self.size_view.make_size_view()
             # Bind the button to the appropriate function
             self.size_view.buttons['Submit'].configure(command=self.get_bed_size)
-            # self.root.mainloop()
         elif plan_type == 'Start a Follow-on Plan from Last Year\'s Plan':
             print('not coded yet')
         elif plan_type == 'Load Saved Plan (current year)':
-            self.raisedbed.load_saved_plan_current_year()
+            self.length, self.width = self.raisedbed.load_saved_plan_current_year(self.plant_list)
+            self.size_view = SizeView(self.root, self)
+            self.get_plan()
 
     '''Ask the user for the size of their garden bed, create the raised bed square objects, 
     and return the empty bed diagram to the user.'''
     def get_bed_size(self):
-        self.length = 5
-        self.width = 2
-        # # get the length and width from the view
-        # if self.size_view.length.get() == "" or self.size_view.length.get() == "":
-        #     messagebox.showinfo("Application Error", "Empty Textbox!")
-        # ######## add error message for non integer ############
-        # else:
-        #     self.length = self.size_view.length.get()
-        #     self.width = self.size_view.width.get()
+        # get the length and width from the view
+        if self.size_view.length.get() == "" or self.size_view.length.get() == "":
+            messagebox.showinfo("Application Error", "Empty Textbox!")
+        ######## add error message for non integer ############
+        else:
+            self.length = self.size_view.length.get()
+            self.width = self.size_view.width.get()
         self.raisedbed.initialize_squares(self.length, self.width)
         self.raisedbed.create_plan_from_square_list(self.plant_list)
         self.get_plan()
@@ -89,7 +90,6 @@ class Controller:
         self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
         self.bedplanview.buttons['Add Plant'].configure(command=self.get_plant_location)
         self.root.mainloop()
-
 
     '''Get the user input for location and plant to add.'''
     def get_plant_location(self):
