@@ -14,6 +14,8 @@ class Controller:
         self.gardenexceptions.call_back(self)
         # self.make_selection_view('view')    uncomment when finished debugging
         # self.plant_list_filename = plant_list_filename
+        self.plant_list = PlantList('data/all_plants.csv')
+
         ##### debugging code ######
         self.zone = 3
         self.set_zone_and_update_view()
@@ -42,12 +44,10 @@ class Controller:
     def set_zone_and_update_view(self):
         # Get the user-selected zone from the dropdown
   #      self.zone = self.view.selected.get()   uncomment when finished debugging
-        # Initialize a PlantList object with the zone
-        self.plantlist = PlantList('data/all_plants.csv', self.zone)
         # Initialize a raised bed with the zone
         self.raisedbed = RaisedBed(self.zone)
         # Update the view to the plan selection
-        #self.make_selection_view('plan_type') uncomment when finished debugging
+        # self.make_selection_view('plan_type') uncomment when done debugging
 
     '''Get button selection and send it to Raised Bed'''
     def get_and_send_plan_selection(self):
@@ -61,8 +61,10 @@ class Controller:
             # Bind the button to the appropriate function
             self.size_view.buttons['Submit'].configure(command=self.get_bed_size)
             # self.root.mainloop()
-        else:
+        elif plan_type == 'Start a Follow-on Plan from Last Year\'s Plan':
             print('not coded yet')
+        elif plan_type == 'Load Saved Plan (current year)':
+            self.raisedbed.load_saved_plan_current_year()
 
     '''Ask the user for the size of their garden bed, create the raised bed square objects, 
     and return the empty bed diagram to the user.'''
@@ -77,12 +79,12 @@ class Controller:
         #     self.length = self.size_view.length.get()
         #     self.width = self.size_view.width.get()
         self.raisedbed.initialize_squares(self.length, self.width)
-        self.raisedbed.create_plan_from_square_list()
+        self.raisedbed.create_plan_from_square_list(self.plant_list)
         self.get_plan()
 
     '''Return the current garden plan to the user'''
     def get_plan(self):
-        self.bedplanview = BedPlanView(self.root, self, self.plantlist.return_plants())
+        self.bedplanview = BedPlanView(self.root, self, self.plant_list.return_plants())
         # show the bed layout to the user
         self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
         self.bedplanview.buttons['Add Plant'].configure(command=self.get_plant_location)
@@ -101,8 +103,8 @@ class Controller:
     '''Add user-input plant to the garden'''
     def add_plant_to_garden(self, plant_row, plant_col, plant_name):
         # call the function in the RaisedBed to fill the square
-        self.raisedbed.fill_square(plant_row, plant_col, plant_name, self.plantlist)
+        self.raisedbed.fill_square(plant_row, plant_col, plant_name, self.plant_list)
         # add the plant to the raised bed
-        self.raisedbed.create_plan_from_square_list()
+        self.raisedbed.create_plan_from_square_list(self.plant_list)
         self.get_plan()
 
