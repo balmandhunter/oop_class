@@ -1,4 +1,4 @@
-import numpy as np
+import pandas as pd
 import csv
 from Square import Square
 from Plant import Plant, Annual, Perennial
@@ -32,7 +32,6 @@ class RaisedBed:
     def fill_square(self, plant_row, plant_col, plant_name, plant_list):
         # get square object
         square = self.square_obj_list[int(plant_row)-1][int(plant_col) - 1]
-        # self.plant_list = PlantList()
         # create a plant object for the correct plant and zone
         if plant_list.get_perennial_status(plant_name) == 1:
             plant = Perennial(True, plant_name, self.zone)
@@ -45,26 +44,32 @@ class RaisedBed:
         square.occupy_square(plant_name, plant)
 
     '''Create an array that can be saves to a csv from the square object list'''
-    def create_plan_from_square_list(self):
-        self.plant_location_list = [['row', 'column', 'occupied', 'plant']]
+    def create_plan_from_square_list(self, plant_list):
+        self.plant_location_list = [['row', 'column', 'occupied', 'plant', 'count']]
         # iterate through the square object list and append the name of the plant in each location to a list
         for row_idx in range(0, self.length):
             for col_idx in range(0, self.width):
+                plant_name = self.square_obj_list[row_idx][col_idx].plant_name
+                if self.square_obj_list[row_idx][col_idx].occupied == True:
+                    count = plant_list.get_count_per_square(plant_name)
+                else:
+                    count = 0
                 self.plant_location_list.append([row_idx,
                                                  col_idx,
                                                  self.square_obj_list[row_idx][col_idx].occupied,
-                                                 self.square_obj_list[row_idx][col_idx].plant])
+                                                 plant_name,
+                                                 count])
+                # print(self.square_obj_list[row_idx][col_idx].occupied)
         self.save_plan_to_csv()
 
     def save_plan_to_csv(self):
-        # file = open('data/raised_bed.csv', 'w')       # Open/create a text file in write only mode
-        # for line in self.plant_location_list:         # Iterate through each row in array
-        #     for char in line:                         # Iterate through each character in the loop variable line
-        #         file.write(str(char))                 # Write the character to the text file
-        #         file.write(',')
-        #     file.write('\n')                          # Go to the next line in the text file after writing a line
-        # file.close()
-
         with open('data/raised_bed.csv', 'w', newline='') as file:
             mywriter = csv.writer(file, delimiter=',')
             mywriter.writerows(self.plant_location_list)
+
+    def load_saved_plan_current_year(self):
+        df = pd.read_csv('data/raised_bed.csv', index_col=None)
+        self.make_square_obj_list_from_plan(df)
+
+    def make_square_obj_list_from_plan(self, df):
+        print('tada')
