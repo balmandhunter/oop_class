@@ -13,7 +13,7 @@ class Plant():
         self.is_perennial = None
         self.plant_name = plant_name
         self.zone = zone
-        self.plantlist = PlantList('data/all_plants.csv', self.zone)
+        self.plantlist = PlantList('data/all_plants.csv')
         self.initialize_plant()
 
     def initialize_plant(self):
@@ -29,6 +29,10 @@ class Plant():
             self.should_direct_seed = True
         else:
             self.should_direct_seed = False
+
+
+    def get_plant_name(self):
+        return self.plant_name
 
     @abstractmethod
     def get_months_in_ground(self):
@@ -57,7 +61,6 @@ class Perennial(Plant):
                 self.months_in_ground = list(range(self.transplant_month,13))
         elif self.is_new == False:
             self.months_in_ground = list(range(1,13))
-        print(self.plant_name, self.months_in_ground)
 
 
 class Annual(Plant):
@@ -70,4 +73,3 @@ class Annual(Plant):
             self.months_in_ground = list(range(self.direct_seed_month, 13))
         elif self.should_direct_seed == False:
             self.months_in_ground = list(range(self.transplant_month, 13))
-        print(self.plant_name, self.months_in_ground)
