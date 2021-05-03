@@ -50,7 +50,7 @@ class ZonePlanSelectionView(View):
         elif self.dropdown_topic == 'plan_type':
             ###### add this function to clear the canvas -- it's breaking now
             self._clear_canvas()
-            options = ['Load Last Year\'s Plan', 'Start a New Plan']
+            options = ['Start a Follow-on Plan from Last Year\'s Plan', 'Load Saved Plan (current year)', 'Start a New Plan']
             title = 'Select a Plan Type'
         self.create_dropdown(title, options, 1, 0)
 
@@ -133,7 +133,7 @@ class BedPlanView(View):
             count +=1
             value_list = [count]
             for square in row:
-                value_list.append(square.return_plant())
+                value_list.append(square.return_plant_name())
             self.table.insert('', 'end', values=value_list)
 
         self.show_plant_options()
