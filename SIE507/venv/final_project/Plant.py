@@ -38,15 +38,6 @@ class Plant():
     def get_months_in_ground(self):
         pass
 
-
-class Annual(Plant):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def get_months_in_ground(self):
-        pass
-
-
 class Perennial(Plant):
     def __init__(self, is_new, plant_name, zone, **kwargs):
         super().__init__(plant_name, zone, **kwargs)
