@@ -63,9 +63,11 @@ class Controller:
             # Bind the button to the appropriate function
             self.size_view.buttons['Submit'].configure(command=self.get_bed_size)
         elif plan_type == 'Start a Follow-on Plan from Last Year\'s Plan':
-            print('not coded yet')
+            self.length, self.width = self.raisedbed.load_last_year_plan(self.plant_list)
+            self.size_view = SizeView(self.root, self)
+            self.get_plan()
         elif plan_type == 'Load Saved Plan (current year)':
-            self.length, self.width = self.raisedbed.load_saved_plan_current_year(self.plant_list)
+            self.length, self.width = self.raisedbed.load_last_year_plan(self.plant_list)
             self.size_view = SizeView(self.root, self)
             self.get_plan()
 
