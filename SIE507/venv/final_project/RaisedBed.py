@@ -35,11 +35,8 @@ class RaisedBed:
         # create a plant object for the correct plant and zone
         if plant_list.get_perennial_status(plant_name) == 1:
             plant = Perennial(True, plant_name, self.zone)
-        elif plant_list.get_perennial_status(plant_name) == 0:
-            plant = Annual(plant_name, self.zone)
         else:
-            print('Need to write exception')
-            #######add exception ############
+            plant = Annual(plant_name, self.zone)
         # occupy the square
         square.occupy_square(plant_name, plant)
 
