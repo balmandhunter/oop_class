@@ -64,12 +64,11 @@ class Controller:
     and return the empty bed diagram to the user.'''
     def get_bed_size(self):
         # get the length and width from the view
-        if self.size_view.length.get() == "" or self.size_view.length.get() == "":
-            messagebox.showinfo("Application Error", "Empty Textbox!")
-        ######## add error message for non integer ############
-        else:
-            self.length = self.size_view.length.get()
-            self.width = self.size_view.width.get()
+        self.gardenexceptions.check_row_col_entry(self.size_view.length.get(),
+                                                  self.size_view.width.get())
+        # get the length and width from the view
+        self.length = self.size_view.length.get()
+        self.width = self.size_view.width.get()
         self.raisedbed.initialize_squares(self.length, self.width)
         self.raisedbed.create_plan_from_square_list(self.plant_list)
         self.get_plan(plan_type='new')
