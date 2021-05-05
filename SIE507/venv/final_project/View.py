@@ -5,40 +5,41 @@ import pandas as pd
 
 
 class View:
-    def __init__(self, controller, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self):
+        self.root1 = tk.Tk()
+        self.root1.withdraw()
+        self.root = tk.Toplevel(self.root1)
+        self.initialize_GUI()
 
+    '''Make a call back to the controller to send button commands'''
     def call_back(self, controller):
         self.controller = controller
 
+    '''Initialize the GUI'''
     def initialize_GUI(self):
         # setup and name the window
         self.root.title("Maine Garden Planner")
+        self.mainframe = ttk.Frame(self.root)
+        self.mainframe.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
 
     '''Destroy all of the widgets before making a new window'''
-    def _clear_canvas(self):
-        for widget in self.root.winfo_children():
-            pass
-            # widget.destroy()
+    def clear_canvas(self):
+        for widget in self.mainframe.winfo_children():
+            widget.destroy()
 
     '''Create a button and add it to the button dictionary'''
-    def create_button(self, frame, name, row, column, alignment=None):
+    def create_button(self, frame, name, row, column, buttons, alignment=None):
         # Style the buttons
         ttk.Style().configure("TButton", padding=6, relief="flat", background="#ccc")
-        self.buttons[name] = ttk.Button(frame)
-        self.buttons[name]["text"] = name
-        self.buttons[name].grid(row=row, column=column, padx=15, pady=10, sticky=alignment)
+        buttons[name] = ttk.Button(frame)
+        buttons[name]["text"] = name
+        buttons[name].grid(row=row, column=column, padx=15, pady=10, sticky=alignment)
 
-class ZonePlanSelectionView(View):
-    def __init__(self, root, controller, dropdown_topic,  **kwargs):
-        super().__init__(controller, **kwargs)
-        self.mainframe = ttk.Frame(root)
-        self.mainframe.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
-        self.root = root
-        self.buttons = {}
-        self.controller = controller
+
+class ZonePlanSelectionView():
+    def __init__(self, dropdown_topic, view):
         self.dropdown_topic = dropdown_topic
-        super().initialize_GUI()
+        self.view = view
 
     '''Create the initial view in the GUI'''
     def make_initial_view(self):
@@ -47,20 +48,21 @@ class ZonePlanSelectionView(View):
             options = ['3','4','5']
             title = 'Select Your Gardening Zone'
         elif self.dropdown_topic == 'plan_type':
-            ###### add this function to clear the canvas -- it's breaking now
-            self._clear_canvas()
-            options = ['Start a Follow-on Plan from Last Year\'s Plan', 'Load Saved Plan (current year)', 'Start a New Plan']
+            self.view.clear_canvas()
+            options = ['Start a Follow-on Plan from Last Year\'s Plan',
+                       'Load Saved Plan (current year)',
+                       'Start a New Plan']
             title = 'Select a Plan Type'
         self.create_dropdown(title, options, 1, 0, self.dropdown_topic)
 
         # display the zone dropdown
         self.zone_dropdown.grid(row=0, column=0, padx=15, pady=15, ipadx=10)
 
-        # make an exit button to end the program
-        exit_button = ttk.Button(self.mainframe, text="EXIT", command=self.root.destroy)
-        exit_button.grid(row=8, column=0, padx=15, pady=5, sticky='W')
 
-        self.root.mainloop()
+        # make an quit button to end the program
+        quit_button = ttk.Button(self.view.mainframe, text="Quit", command=self.view.root.destroy)
+        quit_button.grid(row=2, column=0, padx=15, pady=5, sticky='W')
+
 
 
     '''Create the dropdown menu'''
@@ -70,67 +72,71 @@ class ZonePlanSelectionView(View):
         # set default in dropdown
         self.selected.set(title)
         # create drop down menu
-        self.zone_dropdown = tk.OptionMenu(self.mainframe, self.selected, *values)
-        # make the button
-        self.create_button(self.mainframe, 'Submit', buttonrow, buttoncol, 'W')
+        self.zone_dropdown = tk.OptionMenu(self.view.mainframe, self.selected, *values)
         # set the command for the button
         if dropdown_topic == 'view':
-            button_command = self.controller.set_zone_and_update_view
+            button_command = self.view.controller.set_zone_and_update_view
         elif dropdown_topic == 'plan_type':
-            button_command = self.controller.get_and_send_plan_selection
-        # Bind the button to the  function
-        self.buttons['Submit'].configure(command=button_command)
+            button_command = self.view.controller.get_and_send_plan_selection
+        # make the button
+        ttk.Style().configure("TButton", padding=6, relief="flat", background="#ccc")
+        submit_button = ttk.Button(self.view.mainframe, text="Submit", command=button_command)
+        submit_button.grid(row=buttonrow, column=buttoncol, padx=15, pady=10, sticky='W')
 
-class SizeView(View):
-    def __init__(self, root, controller,  **kwargs):
-        super().__init__(controller, **kwargs)
-        self.root = root
-        self.mainframe = ttk.Frame(self.root)
-        self.mainframe.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
-        self.buttons = {}
-        self.controller = controller
-        super().initialize_GUI()
+
+        # Bind the button to the  function
+        # self.buttons['Submit'].configure(command=button_command)
+
+class SizeView():
+    def __init__(self, view):
+        self.view = view
 
     '''Create the view where users input the size of their garden bed'''
     def make_size_view(self):
-        ####### self._clear_canvas()
+        self.view.clear_canvas()
         self.length = tk.StringVar()
         self.width = tk.StringVar()
 
         # Label the entry boxes
-        self.length_label = tk.Label(self.mainframe, text="Garden Bed Length (ft): ").grid(row=0, column=0, padx=15, pady=15, sticky='W')
-        self.width_label = tk.Label(self.mainframe, text="Garden Bed Width (ft): ").grid(row=1, column=0, padx=15, pady=15, sticky='W')
+        self.length_label = tk.Label(self.view.mainframe, text="Garden Bed Length (ft): ").grid(row=0, column=0,
+                                                                                                padx=15, pady=15,
+                                                                                                sticky='W')
+        self.width_label = tk.Label(self.view.mainframe, text="Garden Bed Width (ft): ").grid(row=1, column=0,
+                                                                                              padx=15, pady=15,
+                                                                                              sticky='W')
 
         # Create the entry boxes
-        self.length_entry = tk.Entry(self.mainframe, textvariable=self.length).grid(row=0, column=1, padx=15, pady=15, sticky='W')
-        self.width_entry = tk.Entry(self.mainframe, textvariable=self.width).grid(row=1, column=1, padx=15, pady=15, sticky='W')
+        self.length_entry = tk.Entry(self.view.mainframe, textvariable=self.length).grid(row=0, column=1,
+                                                                                         padx=15, pady=15,
+                                                                                         sticky='W')
+        self.width_entry = tk.Entry(self.view.mainframe, textvariable=self.width).grid(row=1, column=1,
+                                                                                       padx=15, pady=15,
+                                                                                       sticky='W')
 
         # Create the submit button
-        self.create_button(self.mainframe, 'Submit', 3, 0, 'W')
-        # Bind the button to the appropriate function
-        self.buttons['Submit'].configure(command=self.controller.get_bed_size)
+        submit_button = ttk.Button(self.view.mainframe,
+                                   text="Submit",
+                                   command=self.view.controller.get_bed_size)
+        submit_button.grid(row=2, column=0, padx=15, pady=10, sticky='W')
 
-
-class BedPlanView(View):
-    def __init__(self, root, controller, list_of_plants, **kwargs):
-        super().__init__(controller, **kwargs)
-        self.root = root
-        self.mainframe = ttk.Frame(self.root)
-        self.mainframe.grid(column=0, row=0, sticky=('N', 'W', 'E', 'S'))
+class BedPlanView():
+    def __init__(self, list_of_plants, view):
         self.buttons = {}
-        self.controller = controller
         self.list_of_plants = list_of_plants
-        super().initialize_GUI()
-        self.root.geometry("900x950")
-
+        self.view = view
 
     '''Return the garden plan'''
     def show_bed(self, square_obj_list, length, width, df_plant):
-        tk.Label(self.mainframe, text="Garden Plan (plant and count per square foot): ").grid(row=4, column=0, padx=15, pady=15, sticky='W')
+        self.view.clear_canvas()
 
+        tk.Label(self.view.mainframe, text="Garden Plan (plant and count per square foot): ").grid(row=4,
+                                                                                                   column=0,
+                                                                                                   padx=15,
+                                                                                                   pady=15,
+                                                                                                   sticky='W')
         columns = width
-        self.table = ttk.Treeview(self.mainframe, columns=list(range(1,columns+2)),
-                             height=10, show="headings", selectmode='browse')
+        self.table = ttk.Treeview(self.view.mainframe, columns=list(range(1,columns+2)),
+                             height=length+1, show="headings", selectmode='browse')
 
         # set the column headings and width
         self.table.heading(1, text='')
@@ -144,7 +150,6 @@ class BedPlanView(View):
 
         # iterate through the square object list and get the plant names, then add them
         # to the table (the count becomes an index column)
-        print(square_obj_list)
         count = 0
         for row in square_obj_list:
             count +=1
@@ -163,11 +168,12 @@ class BedPlanView(View):
     '''Return the planting dates table'''
     def show_planting_dates(self, df_planting):
         # make a title for the table
-        tk.Label(self.mainframe, text="Plant List: ").grid(row=6, column=0, padx=15, pady=15, ipadx=10, sticky='W')
+        tk.Label(self.view.mainframe, text="Plant List: ").grid(row=6, column=0, padx=15,
+                                                                pady=15, ipadx=10, sticky='W')
 
         # set up the empty table
-        self.table = ttk.Treeview(self.mainframe, columns=list(range(0,6)),
-                                  height=10, show="headings", selectmode='browse')
+        self.table = ttk.Treeview(self.view.mainframe, columns=list(range(0,6)),
+                                  height=len(df_planting)+1, show="headings", selectmode='browse')
         # set the column headings and width
         self.table.heading(0, text='Plant Name')
         self.table.column(0, width = 100)
@@ -193,7 +199,7 @@ class BedPlanView(View):
 
     '''Create en entry form for users to add a plant in a given location.'''
     def show_plant_options(self):
-        tk.Label(self.mainframe, text="To add a plant, entering the desired location "
+        tk.Label(self.view.mainframe, text="To add a plant, entering the desired location "
                                       "and select a plant from the dropdown menu: ").grid(row=0,
                                                                                            columnspan=2,
                                                                                            column=0,
@@ -206,29 +212,36 @@ class BedPlanView(View):
         self.column = tk.StringVar()
 
         # Label the entry boxes
-        self.row_label = tk.Label(self.mainframe, text="Row: ").grid(row=1, column=0, padx=15, pady=10, sticky='W')
-        self.columnlabel = tk.Label(self.mainframe, text="Column: ").grid(row=2, column=0, padx=15, pady=10, sticky='W')
+        self.row_label = tk.Label(self.view.mainframe, text="Row: ").grid(row=1, column=0,
+                                                                          padx=15, pady=10,
+                                                                          sticky='W')
+        self.columnlabel = tk.Label(self.view.mainframe, text="Column: ").grid(row=2, column=0,
+                                                                               padx=15, pady=10,
+                                                                               sticky='W')
 
         # Create the entry boxes
-        self.row_entry = tk.Entry(self.mainframe, textvariable=self.row).grid(row=1, column=1, padx=15, pady=10, sticky='W')
-        self.column_entry = tk.Entry(self.mainframe, textvariable=self.column).grid(row=2, column=1, padx=15, pady=10, sticky='W')
+        self.row_entry = tk.Entry(self.view.mainframe, textvariable=self.row).grid(row=1, column=1,
+                                                                                   padx=15, pady=10,
+                                                                                   sticky='W')
+        self.column_entry = tk.Entry(self.view.mainframe, textvariable=self.column).grid(row=2, column=1,
+                                                                                         padx=15, pady=10,
+                                                                                         sticky='W')
 
         self.create_plant_dropdown()
 
+    '''Create a dropdown for plant selection'''
     def create_plant_dropdown(self):
         # Create the dropdown
         self.selected = tk.StringVar()
         # set default in dropdown
         self.selected.set("Select a Plant")
         # create dropdown menu
-        self.plant_dropdown = tk.OptionMenu(self.mainframe, self.selected, *self.list_of_plants)
+        self.plant_dropdown = tk.OptionMenu(self.view.mainframe, self.selected, *self.list_of_plants)
         # display the profession dropdown
         self.plant_dropdown.grid(row=3, column=0, padx=15, pady=10, ipadx=10, sticky='W')
         # make the 'add plant' button
-        self.create_button(self.mainframe, 'Add Plant', 3, 1, 'W')
-        # bind the button to the get_plant_location controller function
-        self.buttons['Add Plant'].configure(command=self.controller.get_plant_location)
+        submit_button = ttk.Button(self.view.mainframe, text="Add Plant", command=self.view.controller.get_plant_location)
+        submit_button.grid(row=3, column=1, padx=15, pady=10, sticky='W')
         # make the 'save and quit' button
-        self.create_button(self.mainframe, 'Quit', 8, 0, 'W')
-
-
+        quit_button = ttk.Button(self.view.mainframe, text="Save and Quit", command=self.view.root.destroy)
+        quit_button.grid(row=8, column=0, padx=15, pady=5, sticky='W')
