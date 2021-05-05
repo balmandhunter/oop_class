@@ -16,6 +16,7 @@ class Plant():
         self.plantlist = PlantList('data/all_plants.csv')
         self.initialize_plant()
 
+    '''Initialize a plant object with information based on its zone'''
     def initialize_plant(self):
         df_plant = self.plantlist.df_plant
         df_this_plant = df_plant[(df_plant.name == self.plant_name) & (df_plant.zone == int(self.zone))]
@@ -30,6 +31,7 @@ class Plant():
         else:
             self.should_direct_seed = False
 
+    '''Method to return plant name'''
     def get_plant_name(self):
         return self.plant_name
 
@@ -37,12 +39,14 @@ class Plant():
     def get_months_in_ground(self):
         pass
 
+
 class Perennial(Plant):
     def __init__(self, is_new, plant_name, zone, **kwargs):
         super().__init__(plant_name, zone, **kwargs)
         self.is_new = is_new
         self.get_months_in_ground()
 
+    '''Find the months that the perennial is in the ground'''
     def get_months_in_ground(self):
         if self.is_new == True:
             if self.should_direct_seed == True:
@@ -58,6 +62,7 @@ class Annual(Plant):
         super().__init__(plant_name, zone, **kwargs)
         self.get_months_in_ground()
 
+    '''Return the months that the plant is in the ground'''
     def get_months_in_ground(self):
         if self.should_direct_seed == True:
             self.months_in_ground = list(range(self.direct_seed_month, 13))
