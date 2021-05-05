@@ -12,7 +12,6 @@ class RaisedBed:
 
     def print_zone(self):
         print('Raised Bed Zone: ')
-        print(self.zone)
 
     def print_plantype(self):
         print(self.plan_type)
@@ -24,7 +23,7 @@ class RaisedBed:
         # create an empty list for square objects
         self.square_obj_list = [[0] * self.width for i in range(self.length)]
 
-        # loop through the rows and seats, and create a seat object for every seat, and save it in an array
+        # loop through the rows and seats, and create a square object for every square foot, and save it in an array
         for row in range(0, self.length):
             for col in range(0, self.width):
                 self.square_obj_list[row][col] = Square(row, col)
@@ -44,7 +43,7 @@ class RaisedBed:
         # occupy the square
         square.occupy_square(plant_name, plant)
 
-    '''Create an array that can be saves to a csv from the square object list'''
+    '''Create an array that can be saved to a csv from the square object list'''
     def create_plan_from_square_list(self, plant_list):
         self.plant_location_list = [['row', 'column', 'occupied', 'plant', 'count']]
         # iterate through the square object list and append the name of the plant in each location to a list
@@ -62,7 +61,7 @@ class RaisedBed:
                                                  count])
         self.save_plan_to_csv()
 
-    ''''''
+    '''Save the current plan to a csv file'''
     def save_plan_to_csv(self):
         with open('data/current_plan.csv', 'w', newline='') as file:
             mywriter = csv.writer(file, delimiter=',')
@@ -87,8 +86,8 @@ class RaisedBed:
             if plant.plant != '(empty)':
                 # only add perennials to the plan is loading last year's plan
                 if plan_year == 'current' or plant_list.get_perennial_status(plant.plant) == 1:
-                    self.fill_square(plant.row,
-                                     plant.column,
+                    self.fill_square(plant.row + 1,
+                                     plant.column + 1,
                                      plant.plant,
                                      plant_list)
 
@@ -120,6 +119,7 @@ class RaisedBed:
         self.df_planting = df_plant_locations.merge(df_plant_list_zone, on='name', how='left')
         self.make_planting_df_human_readable()
 
+    '''Convert the planting df to a human friendly format'''
     def make_planting_df_human_readable(self):
         start_indoors_month = []
         transplant_month = []
@@ -149,3 +149,5 @@ class RaisedBed:
         self.df_planting['harvest_month'] = harvest_month
         # Drop the columns we don't want to show
         self.df_planting.drop(columns=['zone', 'is_perennial', 'count_per_square'], inplace=True)
+        # save the planting df to a csv file
+        self.df_planting.to_csv('data/planting_dates.csv', index=False)
