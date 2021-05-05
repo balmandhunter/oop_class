@@ -13,7 +13,7 @@ class Controller:
         self.plant_list = PlantList('data/all_plants.csv')
         self.gardenexceptions = GardenExceptions()
         self.gardenexceptions.call_back(self)
-        self.view = View(self.root, self)
+        self.view = View(self)
         self.make_selection_view('view')    # comment to debug
 
         ##### debugging code ######
@@ -31,7 +31,6 @@ class Controller:
         self.view = ZonePlanSelectionView(self.root, self, dropdown_topic)
         # Call the view object to make the initial view
         self.view.make_initial_view()
-        self.root.mainloop()
 
     '''Get the selected zone from the dropdown, send it to the plant list and raised bed, and update the view.'''
     def set_zone_and_update_view(self):
@@ -81,9 +80,11 @@ class Controller:
     def get_plan(self):
         self.bedplanview = BedPlanView(self.root, self, self.plant_list.return_plants())
         # show the bed layout to the user
-        self.bedplanview.show_bed(self.raisedbed.square_obj_list, self.raisedbed.length, self.raisedbed.width)
+        self.bedplanview.show_bed(self.raisedbed.square_obj_list,
+                                  self.raisedbed.length,
+                                  self.raisedbed.width,
+                                  self.plant_list.df_plant)
         self.bedplanview.show_planting_dates(self.raisedbed.df_planting)
-        self.root.mainloop()
 
     '''Get the user input for location and plant to add.'''
     def get_plant_location(self):
