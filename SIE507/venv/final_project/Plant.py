@@ -18,7 +18,7 @@ class Plant():
 
     def initialize_plant(self):
         df_plant = self.plantlist.df_plant
-        df_this_plant = df_plant[(df_plant.name == self.plant_name) & (df_plant.zone == self.zone)]
+        df_this_plant = df_plant[(df_plant.name == self.plant_name) & (df_plant.zone == int(self.zone))]
         self.count_per_square = df_this_plant.count_per_square.values[0]
         self.start_indoors_month = df_this_plant.start_indoors_month.values[0]
         self.transplant_month = df_this_plant.transplant_month.values[0]
@@ -29,7 +29,6 @@ class Plant():
             self.should_direct_seed = True
         else:
             self.should_direct_seed = False
-
 
     def get_plant_name(self):
         return self.plant_name
