@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 import csv
 from Square import Square
 from Plant import Plant, Annual, Perennial
+from PlantList import PlantList
 
 class RaisedBed:
     def __init__(self, zone):
@@ -95,3 +97,55 @@ class RaisedBed:
         df = pd.read_csv('data/last_year_plan.csv', index_col=None)
         self.make_square_obj_list_from_plan(df, plant_list, 'last_year')
         return self.length, self.width
+
+    '''Make planting dates output'''
+    def make_planting_dates_file(self, plant_list):
+        # convert the plant location list to a numpy array
+        np_plant_location_list = np.asarray(self.plant_location_list)
+        # convert the np array to a df
+        df_plant_locations = pd.DataFrame(np_plant_location_list[1:],
+                                          columns = list(np_plant_location_list[0]),
+                                          index=None)
+        # drop unoccupied spaces
+        df_plant_locations = df_plant_locations[df_plant_locations.occupied == 'True']
+        # drop row and column columns
+        df_plant_locations.drop(columns=['row', 'column', 'occupied'], inplace=True)
+        # sum the plants to get total per square
+        df_plant_locations = df_plant_locations.astype({'count': 'int32'})
+        df_plant_locations = df_plant_locations.groupby(['plant']).sum().reset_index()
+        df_plant_locations.rename(columns={'plant': 'name', 'count': 'total_count'}, inplace=True)
+        # filter the plant list to the current zone
+        df_plant_list_zone = plant_list.df_plant[plant_list.df_plant.zone == int(self.zone)]
+        # merge the two dataframes
+        self.df_planting = df_plant_locations.merge(df_plant_list_zone, on='name', how='left')
+        self.make_planting_df_human_readable()
+
+    def make_planting_df_human_readable(self):
+        start_indoors_month = []
+        transplant_month = []
+        direct_seed_month = []
+        harvest_month = []
+        month_dict = {0: 'Not Recommended',
+                      1: 'January',
+                      2: 'February',
+                      3: 'March',
+                      4: 'April',
+                      5: 'May',
+                      6: 'June',
+                      7: 'July',
+                      8: 'August',
+                      9: 'September',
+                      10: 'October',
+                      11: 'November',
+                      12: 'December'}
+        for idx, row in self.df_planting.iterrows():
+            start_indoors_month.append(month_dict[row.start_indoors_month])
+            transplant_month.append(month_dict[row.transplant_month])
+            direct_seed_month.append(month_dict[row.direct_seed_month])
+            harvest_month.append(month_dict[row.harvest_month])
+        self.df_planting['start_indoors_month'] = start_indoors_month
+        self.df_planting['transplant_month'] = transplant_month
+        self.df_planting['direct_seed_month'] = direct_seed_month
+        self.df_planting['harvest_month'] = harvest_month
+        # Drop the columns we don't want to show
+        self.df_planting.drop(columns=['zone', 'is_perennial', 'count_per_square'], inplace=True)
