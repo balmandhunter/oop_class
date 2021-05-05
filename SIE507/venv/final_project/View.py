@@ -43,27 +43,22 @@ class ZonePlanSelectionView():
 
     '''Create the initial view in the GUI'''
     def make_initial_view(self):
+        # make either the zone or plan type dropdown
         if self.dropdown_topic == 'view':
-            # create the zone dropdown
             options = ['3','4','5']
-            title = 'Select Your Gardening Zone'
+            title = 'Please Select Your Gardening Zone'
         elif self.dropdown_topic == 'plan_type':
             self.view.clear_canvas()
             options = ['Start a Follow-on Plan from Last Year\'s Plan',
                        'Load Saved Plan (current year)',
                        'Start a New Plan']
-            title = 'Select a Plan Type'
+            title = 'Please Select a Plan Type'
         self.create_dropdown(title, options, 1, 0, self.dropdown_topic)
-
-        # display the zone dropdown
+        # display the dropdown
         self.zone_dropdown.grid(row=0, column=0, padx=15, pady=15, ipadx=10)
-
-
         # make an quit button to end the program
         quit_button = ttk.Button(self.view.mainframe, text="Quit", command=self.view.root.destroy)
         quit_button.grid(row=2, column=0, padx=15, pady=5, sticky='W')
-
-
 
     '''Create the dropdown menu'''
     def create_dropdown(self, title, values, buttonrow, buttoncol, dropdown_topic):
@@ -84,9 +79,6 @@ class ZonePlanSelectionView():
         submit_button.grid(row=buttonrow, column=buttoncol, padx=15, pady=10, sticky='W')
 
 
-        # Bind the button to the  function
-        # self.buttons['Submit'].configure(command=button_command)
-
 class SizeView():
     def __init__(self, view):
         self.view = view
@@ -96,7 +88,6 @@ class SizeView():
         self.view.clear_canvas()
         self.length = tk.StringVar()
         self.width = tk.StringVar()
-
         # Label the entry boxes
         self.length_label = tk.Label(self.view.mainframe, text="Garden Bed Length (ft): ").grid(row=0, column=0,
                                                                                                 padx=15, pady=15,
@@ -104,7 +95,6 @@ class SizeView():
         self.width_label = tk.Label(self.view.mainframe, text="Garden Bed Width (ft): ").grid(row=1, column=0,
                                                                                               padx=15, pady=15,
                                                                                               sticky='W')
-
         # Create the entry boxes
         self.length_entry = tk.Entry(self.view.mainframe, textvariable=self.length).grid(row=0, column=1,
                                                                                          padx=15, pady=15,
@@ -112,12 +102,12 @@ class SizeView():
         self.width_entry = tk.Entry(self.view.mainframe, textvariable=self.width).grid(row=1, column=1,
                                                                                        padx=15, pady=15,
                                                                                        sticky='W')
-
         # Create the submit button
         submit_button = ttk.Button(self.view.mainframe,
                                    text="Submit",
                                    command=self.view.controller.get_bed_size)
         submit_button.grid(row=2, column=0, padx=15, pady=10, sticky='W')
+
 
 class BedPlanView():
     def __init__(self, list_of_plants, view):
@@ -128,7 +118,6 @@ class BedPlanView():
     '''Return the garden plan'''
     def show_bed(self, square_obj_list, length, width, df_plant):
         self.view.clear_canvas()
-
         tk.Label(self.view.mainframe, text="Garden Plan (plant and count per square foot): ").grid(row=4,
                                                                                                    column=0,
                                                                                                    padx=15,
@@ -144,26 +133,29 @@ class BedPlanView():
         for column in range(2,columns+2):
             self.table.heading(column, text=str(column-1))
             self.table.column(column, width=100)
-
+        # fill in the garden plan table with plants
+        self.get_plant_names_and_counts(square_obj_list, df_plant)
         # put the table on the canvas
         self.table.grid(row=5, column=0, columnspan=2, padx=15, pady=15, sticky='W')
+        # create an entry form for users to add plants
+        self.show_plant_options()
 
+    '''Add plant names and count per square foot to the table'''
+    def get_plant_names_and_counts(self, square_obj_list, df_plant):
         # iterate through the square object list and get the plant names, then add them
         # to the table (the count becomes an index column)
         count = 0
         for row in square_obj_list:
-            count +=1
+            count += 1
             value_list = [count]
             for square in row:
                 name = square.return_plant_name()
                 if name != '(empty)':
-                    count = df_plant.count_per_square[df_plant.name == name].values[0]
-                    value_list.append(name + ' (' + str(count) + ')')
+                    plant_count = df_plant.count_per_square[df_plant.name == name].values[0]
+                    value_list.append(name + ' (' + str(plant_count) + ')')
                 else:
                     value_list.append(name)
             self.table.insert('', 'end', values=value_list)
-
-        self.show_plant_options()
 
     '''Return the planting dates table'''
     def show_planting_dates(self, df_planting):
@@ -200,7 +192,7 @@ class BedPlanView():
     '''Create en entry form for users to add a plant in a given location.'''
     def show_plant_options(self):
         tk.Label(self.view.mainframe, text="To add a plant, entering the desired location "
-                                      "and select a plant from the dropdown menu: ").grid(row=0,
+                                      "and select a plant from the dropdown menu.").grid(row=0,
                                                                                            columnspan=2,
                                                                                            column=0,
                                                                                            padx=15,
@@ -234,7 +226,7 @@ class BedPlanView():
         # Create the dropdown
         self.selected = tk.StringVar()
         # set default in dropdown
-        self.selected.set("Select a Plant")
+        self.selected.set("Please Select a Plant")
         # create dropdown menu
         self.plant_dropdown = tk.OptionMenu(self.view.mainframe, self.selected, *self.list_of_plants)
         # display the profession dropdown
