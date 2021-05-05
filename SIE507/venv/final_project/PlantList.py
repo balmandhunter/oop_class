@@ -20,19 +20,22 @@ class PlantList:
                                     names=headers,
                                     dtype=dtypes)
 
-    '''Return a list of all of the available plants'''
+    '''Return a list of all of the available plants, and how many fit per square foot'''
     def return_plants(self):
-        plants = self.df_plant.name.unique()
-        return plants
+        self.df_plant_name_and_count = self.df_plant.copy()[['name', 'count_per_square']].drop_duplicates()
+        plant_names_and_counts = []
+        for idx, row in self.df_plant_name_and_count.iterrows():
+            plant_names_and_counts.append(row['name'] + ' (' + str(row.count_per_square) + ')')
+        return plant_names_and_counts
 
     '''Return whether a plant is a perennial or not'''
     def get_perennial_status(self, name):
         # drop the extra zone entries for each plant
-        df_perennial = self.df_plant[['name', 'is_perennial']].drop_duplicates()
+        df_perennial = self.df_plant.copy()[['name', 'is_perennial']].drop_duplicates()
         is_perennial = df_perennial[df_perennial.name == name].is_perennial.values[0]
         return is_perennial
 
     '''Make a df of count per square for each plant, which can be called when creating a plan'''
     def get_count_per_square(self, plant_name):
-        df_count_per_square = self.df_plant[['name', 'count_per_square']].drop_duplicates()
+        df_count_per_square = self.df_plant.copy()[['name', 'count_per_square']].drop_duplicates()
         return df_count_per_square[df_count_per_square.name == plant_name].count_per_square.values[0]
