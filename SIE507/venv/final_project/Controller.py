@@ -39,7 +39,6 @@ class Controller:
 
     '''Get button selection and send it to Raised Bed'''
     def get_and_send_plan_selection(self):
-        # self.view.root.destroy()
         # Get the user-selected plan type
         self.raisedbed.plan_type = self.zoneplanview.selected.get()
         # create and show the appropriate plan
