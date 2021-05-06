@@ -27,15 +27,6 @@ class View:
         for widget in self.mainframe.winfo_children():
             widget.destroy()
 
-    '''Create a button and add it to the button dictionary'''
-    def create_button(self, frame, name, row, column, buttons, alignment=None):
-        # Style the buttons
-        ttk.Style().configure("TButton", padding=6, relief="flat", background="#ccc")
-        buttons[name] = ttk.Button(frame)
-        buttons[name]["text"] = name
-        buttons[name].grid(row=row, column=column, padx=15, pady=10, sticky=alignment)
-
-
 class ZonePlanSelectionView():
     def __init__(self, dropdown_topic, view):
         self.dropdown_topic = dropdown_topic
@@ -111,7 +102,6 @@ class SizeView():
 
 class BedPlanView():
     def __init__(self, list_of_plants, view):
-        self.buttons = {}
         self.list_of_plants = list_of_plants
         self.view = view
 
@@ -158,9 +148,10 @@ class BedPlanView():
             self.table.insert('', 'end', values=value_list)
 
     '''Return the planting dates table'''
-    def show_planting_dates(self, df_planting):
+    def show_planting_dates(self, df_planting, zone):
         # make a title for the table
-        tk.Label(self.view.mainframe, text="Plant List: ").grid(row=6, column=0, padx=15,
+        label = "Plant List " + "(Zone " + str(zone) + ")"
+        tk.Label(self.view.mainframe, text=label).grid(row=6, column=0, padx=15,
                                                                 pady=15, ipadx=10, sticky='W')
 
         # set up the empty table
