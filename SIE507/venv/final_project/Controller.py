@@ -82,7 +82,7 @@ class Controller:
                                   self.raisedbed.width,
                                   self.plant_list.df_plant)
         if plan_type != 'new':
-            self.bedplanview.show_planting_dates(self.raisedbed.df_planting)
+            self.bedplanview.show_planting_dates(self.raisedbed.df_planting, self.zone)
 
     '''Get the user input for location and plant to add.'''
     def get_plant_location(self):
@@ -93,7 +93,7 @@ class Controller:
         plant_name = plant_name_and_count.split(' (')[0]
 
         #check that the entries are appropriate
-        self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name, self.view)
+        self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name)
         self.add_plant_to_garden(plant_row, plant_col, plant_name)
         self.get_plan()
 
