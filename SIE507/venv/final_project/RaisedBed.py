@@ -5,18 +5,16 @@ from Square import Square
 from Plant import Plant, Annual, Perennial
 from PlantList import PlantList
 
+
 class RaisedBed:
     def __init__(self, zone):
         self.zone = zone
         self.plan_type = None
 
-    def print_zone(self):
-        print('Raised Bed Zone: ')
-
     def print_plantype(self):
         print(self.plan_type)
 
-    '''Function to create a list of empty squares, based on the user input length and width'''
+    '''Method to create a list of empty squares, based on the user input length and width'''
     def initialize_squares(self, length, width):
         self.length = int(length)
         self.width = int(width)
@@ -28,13 +26,13 @@ class RaisedBed:
             for col in range(0, self.width):
                 self.square_obj_list[row][col] = Square(row, col)
 
-    '''Function to book a square'''
-    def fill_square(self, plant_row, plant_col, plant_name, plant_list):
+    '''Method to book a square'''
+    def fill_square(self, plant_row, plant_col, plant_name, plant_list, is_new=True):
         # get square object
         square = self.square_obj_list[int(plant_row)-1][int(plant_col) - 1]
         # create a plant object for the correct plant and zone
         if plant_list.get_perennial_status(plant_name) == 1:
-            plant = Perennial(True, plant_name, self.zone)
+            plant = Perennial(is_new, plant_name, self.zone)
         else:
             plant = Annual(plant_name, self.zone)
         # occupy the square
@@ -42,20 +40,34 @@ class RaisedBed:
 
     '''Create an array that can be saved to a csv from the square object list'''
     def create_plan_from_square_list(self, plant_list):
-        self.plant_location_list = [['row', 'column', 'occupied', 'plant', 'count']]
+        self.plant_location_list = [['row', 'column', 'occupied', 'plant', 'count', 'is_perennial', 'is_new']]
         # iterate through the square object list and append the name of the plant in each location to a list
         for row_idx in range(0, self.length):
             for col_idx in range(0, self.width):
                 plant_name = self.square_obj_list[row_idx][col_idx].plant_name
-                if self.square_obj_list[row_idx][col_idx].occupied == True:
+                if self.square_obj_list[row_idx][col_idx].occupied:
                     count = plant_list.get_count_per_square(plant_name)
                 else:
                     count = 0
-                self.plant_location_list.append([row_idx,
-                                                 col_idx,
-                                                 self.square_obj_list[row_idx][col_idx].occupied,
-                                                 plant_name,
-                                                 count])
+                # for occupied squares, include info from the plant object
+                if self.square_obj_list[row_idx][col_idx].occupied:
+                    self.plant_location_list.append([row_idx,
+                                                     col_idx,
+                                                     self.square_obj_list[row_idx][col_idx].occupied,
+                                                     plant_name,
+                                                     count,
+                                                     self.square_obj_list[row_idx][col_idx].plant_object.is_perennial,
+                                                     self.square_obj_list[row_idx][col_idx].plant_object.is_new])
+                # for unoccupied squares, set count, is_perennial, and is_new to None
+                else:
+                    self.plant_location_list.append([row_idx,
+                                                     col_idx,
+                                                     self.square_obj_list[row_idx][col_idx].occupied,
+                                                     plant_name,
+                                                     None,
+                                                     None,
+                                                     None])
+
         self.save_plan_to_csv()
 
     '''Save the current plan to a csv file'''
@@ -81,12 +93,17 @@ class RaisedBed:
         for idx, plant in df.iterrows():
             # only add plants for squares that are occupied in the loaded plan
             if plant.plant != '(empty)':
-                # only add perennials to the plan is loading last year's plan
+                # only add perennials to the plan if loading last year's plan
                 if plan_year == 'current' or plant_list.get_perennial_status(plant.plant) == 1:
+                    if plan_year == 'current':
+                        is_new = plant.is_new
+                    else:
+                        is_new = False
                     self.fill_square(plant.row + 1,
                                      plant.column + 1,
                                      plant.plant,
-                                     plant_list)
+                                     plant_list,
+                                     is_new)
 
     '''Load a saved plan for this year'''
     def load_last_year_plan(self, plant_list):
@@ -100,10 +117,14 @@ class RaisedBed:
         np_plant_location_list = np.asarray(self.plant_location_list)
         # convert the np array to a df
         df_plant_locations = pd.DataFrame(np_plant_location_list[1:],
-                                          columns = list(np_plant_location_list[0]),
+                                          columns=list(np_plant_location_list[0]),
                                           index=None)
         # drop unoccupied spaces
-        df_plant_locations = df_plant_locations[df_plant_locations.occupied == 'True']
+        df_plant_locations = df_plant_locations[df_plant_locations.occupied == True]
+        # drop perennials that aren't new (they don't need to be planted because they're there)
+        df_plant_locations.drop(df_plant_locations[(df_plant_locations.is_perennial == 1)
+                                                   & (df_plant_locations.is_new == False)].index,
+                                inplace=True)
         # drop row and column columns
         df_plant_locations.drop(columns=['row', 'column', 'occupied'], inplace=True)
         # sum the plants to get total per square
