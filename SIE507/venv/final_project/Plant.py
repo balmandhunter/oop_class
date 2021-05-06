@@ -61,6 +61,7 @@ class Annual(Plant):
     def __init__(self, plant_name, zone, **kwargs):
         super().__init__(plant_name, zone, **kwargs)
         self.get_months_in_ground()
+        self.is_new = None
 
     '''Return the months that the plant is in the ground'''
     def get_months_in_ground(self):
