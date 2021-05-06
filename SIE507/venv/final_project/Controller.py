@@ -93,13 +93,13 @@ class Controller:
         plant_name = plant_name_and_count.split(' (')[0]
 
         #check that the entries are appropriate
-        self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name)
+        self.gardenexceptions.check_plant_location_entry(plant_row, plant_col, plant_name, self.view)
         self.add_plant_to_garden(plant_row, plant_col, plant_name)
         self.get_plan()
 
     '''Add user-input plant to the garden'''
     def add_plant_to_garden(self, plant_row, plant_col, plant_name):
-        # call the function in the RaisedBed to fill the square
+        # call the method in the RaisedBed to fill the square
         self.raisedbed.fill_square(plant_row, plant_col, plant_name, self.plant_list)
         # add the plant to the raised bed
         self.raisedbed.create_plan_from_square_list(self.plant_list)
