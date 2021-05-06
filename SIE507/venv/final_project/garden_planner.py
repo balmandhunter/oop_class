@@ -1,2 +1,3 @@
-from View import View
+from Controller import Controller
 
+c = Controller()
